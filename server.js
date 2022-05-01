@@ -12,7 +12,7 @@ const res = require('express/lib/response');
 
 mongoose.connect(process.env.DB_URL);
 //AUTHENTICATION
-const authUser = require('./auth');
+//const authUser = require('./auth');
 
 //add validation to confirm we are wired to mongodb
 const db = mongoose.connection;

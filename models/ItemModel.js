@@ -7,7 +7,7 @@ const {Schema} = mongoose;
 
 //create a something schema, defin how our somehting objects will be structured
 
-const ItemSchema = new Schema({//properties of something is instantiated below
+const itemSchema = new Schema({//properties of something is instantiated below
 
     //title : {type: String, required: true},
     //description: {type: String, required: true},
@@ -18,5 +18,5 @@ const ItemSchema = new Schema({//properties of something is instantiated below
 //define our model
 
 //this will give functionality 
-const Item = mongoose.model('Item', itemSchema);
+const Item = mongoose.model('Items', itemSchema);
 module.exports = Item;
