@@ -41,7 +41,6 @@ async function getRestaurants(request, response, next)
     try{
       const userCity = request.query.location;
       const userInput = request.query.term;
-      //check if star will work to search in term? if not then error check and do again.
       const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
       let foodData = await axios.get(url, {
         headers:{
@@ -49,7 +48,7 @@ async function getRestaurants(request, response, next)
         }
       });
       let yelpedData = foodData.data.businesses.map(loc => {return new RestaurantData(loc)})
-        response.status(200).send(results);
+        response.status(200).send(yelpedData);
     }catch(error)
     {
         next(error);
@@ -77,8 +76,6 @@ async function postRestaurants(request, response, next)
 async function deleteItem(request, response, next) {
   // capture the id in the url
   let id = request.params.id;
-  // console.log('id: ',id);
-  
   try {
     // attempt delete using mongoose
     await Item.findByIdAndDelete(id);
@@ -108,9 +105,9 @@ app.post('/restaurants', postRestaurants);
 
 app.get('/restaurants', getRestaurants);
 
-//app.delete('/item/:id', deleteItem);
+app.delete('/restaurants/:id', deleteItem);
 
-//app.put('/item/:id', putItem);
+app.put('/restaurants/:id', putItem);
 
 app.get('/', (request, response) => {
 
@@ -123,7 +120,7 @@ class RestaurantData {
   constructor(rest)
   {
 
-      console.log("HERE", rest);
+      //console.log("HERE", rest);
     this.name = rest.name;
     this.rating = rest.rating;
     this.address = rest.location.address;
@@ -131,6 +128,7 @@ class RestaurantData {
     this.imageUrl = rest.image_url;
     this.state = rest.location.state;
     this.zipCode = rest.location.zip_code;
+    this.notes = '';
     return;
   }
 }
