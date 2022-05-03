@@ -4,12 +4,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const Item = require('./models/ItemModel.js');
 const res = require('express/lib/response');
-
-
 //schema
 
+const Item = require('./models/ItemModel.js');
 mongoose.connect(process.env.DB_URL);
 //AUTHENTICATION
 //const authUser = require('./auth');
@@ -53,6 +51,8 @@ async function getItems(request, response, next)
     }
     //}});
 }
+
+
 
 async function postItems(request, response, next)
 {
@@ -110,6 +110,7 @@ app.delete('/item/:id', deleteItem);
 app.put('/item/:id', putItem);
 
 app.get('/', (request, response) => {
+
     response.send('test requested');
 });
 app.get('*', (request, reponse) => response.status(404).send('not correct webpage. try again'))
