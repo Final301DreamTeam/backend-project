@@ -5,9 +5,10 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const res = require('express/lib/response');
+const Item = require('./models/ItemModel.js');
+const axios = require('axios');
 //schema
 
-const Item = require('./models/ItemModel.js');
 mongoose.connect(process.env.DB_URL);
 //AUTHENTICATION
 //const authUser = require('./auth');
@@ -25,8 +26,7 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3002;
-
-async function getItems(request, response, next)
+async function getRestaurants(request, response, next)
 {
     /*
   authUser(request, async (error, user) =>{
@@ -37,13 +37,18 @@ async function getItems(request, response, next)
     else{
         */
 
+
     try{
-        let queryObj = {};
-        if(request.query.result){
-            queryObj.description = request.query.description;
+      const userCity = request.query.location;
+      const userInput = request.query.term;
+      //check if star will work to search in term? if not then error check and do again.
+      const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
+      let foodData = await axios.get(url, {
+        headers:{
+          'Authorization': `Bearer ${process.env.apiKey}`
         }
-        let results = await Item.find();
-        //let results = await Item.find(queryObj);
+      });
+      let yelpedData = foodData.data.businesses.map(loc => {return new RestaurantData(loc)})
         response.status(200).send(results);
     }catch(error)
     {
@@ -54,12 +59,10 @@ async function getItems(request, response, next)
 
 
 
-async function postItems(request, response, next)
+
+async function postRestaurants(request, response, next)
 {
   try {
-    //  get info from body of request object
-    console.log('request.body: ',request.body);
-
     //  create a record and save
     const createdItem = await Item.create(request.body);
     response.status(200).send(createdItem);
@@ -101,18 +104,41 @@ async function putItem(request, response, next)
 
 // serverurl/item/<item_id>
 
-app.post('/items', postItems);
+app.post('/restaurants', postRestaurants);
 
-app.get('/items', getItems);
+app.get('/restaurants', getRestaurants);
 
-app.delete('/item/:id', deleteItem);
+//app.delete('/item/:id', deleteItem);
 
-app.put('/item/:id', putItem);
+//app.put('/item/:id', putItem);
 
 app.get('/', (request, response) => {
 
     response.send('test requested');
 });
+
+
+
+class RestaurantData {
+  constructor(rest)
+  {
+
+      console.log("HERE", rest);
+    this.name = rest.name;
+    this.rating = rest.rating;
+    this.address = rest.location.address;
+    this.city = rest.location.city;
+    this.imageUrl = rest.image_url;
+    this.state = rest.location.state;
+    this.zipCode = rest.location.zip_code;
+    return;
+  }
+}
+
+
+
+
+
 app.get('*', (request, reponse) => response.status(404).send('not correct webpage. try again'))
 
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
