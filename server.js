@@ -4,10 +4,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const Item = require('./models/ItemModel.js');
 const res = require('express/lib/response');
-
-
+const Restaurant = require('./models/restaurantModel.js');
+const axios = require('axios');
 //schema
 
 mongoose.connect(process.env.DB_URL);
@@ -27,8 +26,7 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3002;
-
-async function getItems(request, response, next)
+async function getRestaurants(request, response, next)
 {
     /*
   authUser(request, async (error, user) =>{
@@ -39,14 +37,18 @@ async function getItems(request, response, next)
     else{
         */
 
+
     try{
-        let queryObj = {};
-        if(request.query.result){
-            queryObj.description = request.query.description;
+      const userCity = request.query.location;
+      const userInput = request.query.term;
+      const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
+      let foodData = await axios.get(url, {
+        headers:{
+          'Authorization': `Bearer ${process.env.apiKey}`
         }
-        let results = await Item.find();
-        //let results = await Item.find(queryObj);
-        response.status(200).send(results);
+      });
+      let yelpedData = foodData.data.businesses.map(loc => {return new RestaurantData(loc)})
+        response.status(200).send(yelpedData);
     }catch(error)
     {
         next(error);
@@ -54,64 +56,87 @@ async function getItems(request, response, next)
     //}});
 }
 
-async function postItems(request, response, next)
+
+
+
+async function postRestaurants(request, response, next)
 {
   try {
-    //  get info from body of request object
-    console.log('request.body: ',request.body);
-
     //  create a record and save
-    const createdItem = await Item.create(request.body);
-    response.status(200).send(createdItem);
+    const createdRestaurant = await restaurant.create(request.body);
+    response.status(200).send(createdRestaurant);
   }
   catch (error)
   {
-    console.log('An error occurred in addItem callback: ', error.message);
+    console.log('An error occurred in addrestaurant callback: ', error.message);
     next(error);
   }
 }
 
-async function deleteItem(request, response, next) {
+async function deleteRestaurant(request, response, next) {
   // capture the id in the url
   let id = request.params.id;
-  // console.log('id: ',id);
-  
   try {
     // attempt delete using mongoose
-    await Item.findByIdAndDelete(id);
-    response.status(200).send('Item deleted.')
+    await restaurant.findByIdAndDelete(id);
+    response.status(200).send('restaurant deleted.')
   }
   catch (error) {
-    console.log('An error occurred in deleteItem callback: ', error.message);
+    console.log('An error occurred in deleteRestaurant callback: ', error.message);
     next(error);
   }
 }
 
-async function putItem(request, response, next)
+async function putRestaurant(request, response, next)
 {
   try{
     let id = request.params.id;
-    let updatedItem = await Item.findByIdAndUpdate(id, request.body, { new: true, overwrite: true});
-    response.status(200).send(updatedItem);
+    let updatedRestaurant = await restaurant.findByIdAndUpdate(id, request.body, { new: true, overwrite: true});
+    response.status(200).send(updatedRestaurant);
   }
   catch(error){
     next(error);
   }
 }
 
-// serverurl/item/<item_id>
+// serverurl/restaurant/<restaurant_id>
 
-app.post('/items', postItems);
+app.post('/restaurants', postRestaurants);
 
-app.get('/items', getItems);
+app.get('/restaurants', getRestaurants);
 
-app.delete('/item/:id', deleteItem);
+app.delete('/restaurants/:id', deleteRestaurant);
 
-app.put('/item/:id', putItem);
+app.put('/restaurants/:id', putRestaurant);
 
 app.get('/', (request, response) => {
+
     response.send('test requested');
 });
+
+
+
+class RestaurantData {
+  constructor(rest)
+  {
+
+      //console.log("HERE", rest);
+    this.name = rest.name;
+    this.rating = rest.rating;
+    this.address = rest.location.address;
+    this.city = rest.location.city;
+    this.imageUrl = rest.image_url;
+    this.state = rest.location.state;
+    this.zipCode = rest.location.zip_code;
+    this.notes = '';
+    return;
+  }
+}
+
+
+
+
+
 app.get('*', (request, reponse) => response.status(404).send('not correct webpage. try again'))
 
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
