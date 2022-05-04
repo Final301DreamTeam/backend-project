@@ -119,15 +119,15 @@ app.get('/', (request, response) => {
 class RestaurantData {
   constructor(rest)
   {
-
       //console.log("HERE", rest);
     this.name = rest.name;
     this.rating = rest.rating;
-    this.address = rest.location.address;
+    this.address = rest.location.display_address;
     this.city = rest.location.city;
-    this.imageUrl = rest.image_url;
+    this.image_url = rest.image_url;
     this.state = rest.location.state;
-    this.zipCode = rest.location.zip_code;
+    this.zip_code = rest.location.zip_code;
+    this.price = rest.price;
     this.notes = '';
     return;
   }
