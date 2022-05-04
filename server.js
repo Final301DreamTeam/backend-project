@@ -63,7 +63,7 @@ async function postRestaurants(request, response, next)
 {
   try {
     //  create a record and save
-    const createdRestaurant = await restaurant.create(request.body);
+    const createdRestaurant = await Restaurant.create(request.body);
     response.status(200).send(createdRestaurant);
   }
   catch (error)
@@ -78,7 +78,7 @@ async function deleteRestaurant(request, response, next) {
   let id = request.params.id;
   try {
     // attempt delete using mongoose
-    await restaurant.findByIdAndDelete(id);
+    await Restaurant.findByIdAndDelete(id);
     response.status(200).send('restaurant deleted.')
   }
   catch (error) {
@@ -91,7 +91,7 @@ async function putRestaurant(request, response, next)
 {
   try{
     let id = request.params.id;
-    let updatedRestaurant = await restaurant.findByIdAndUpdate(id, request.body, { new: true, overwrite: true});
+    let updatedRestaurant = await Restaurant.findByIdAndUpdate(id, request.body, { new: true, overwrite: true});
     response.status(200).send(updatedRestaurant);
   }
   catch(error){
