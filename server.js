@@ -7,6 +7,8 @@ const mongoose = require('mongoose');
 const res = require('express/lib/response');
 const Restaurant = require('./models/restaurantModel.js');
 const axios = require('axios');
+const verifyUser = require('./auth');
+
 //schema
 
 mongoose.connect(process.env.DB_URL);
@@ -36,9 +38,13 @@ async function getRestaurants(request, response, next)
     }
     else{
         */
-
-
+       //const searchObject = {};
+       //if(request.query.email) searchObject.email = req.query.email;
     try{
+      //const restaurantFromDb = await Restaurant.find(searchObject);
+      //if(restaurantFromDb.length > 0)
+        //response.status(200).send()
+
       const userCity = request.query.location;
       const userInput = request.query.term;
       const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
@@ -130,7 +136,11 @@ class RestaurantData {
     this.zip_code = rest.location.zip_code;
     this.price = rest.price;
     this.notes = '';
+    this.googleapi(rest);
     return;
+  }
+  googleapi(data){
+    console.log(data);
   }
 }
 
