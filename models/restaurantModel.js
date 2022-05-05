@@ -17,7 +17,10 @@ const restaurantSchema = new Schema({//properties of something is instantiated b
     state: {type: String, required: true},
     zip_code: {type: String, required: true},
     price:{type: String, required: true},
-    notes: {type: String, required: false}
+    notes: {type: String, required: false},
+    review_count: {type: String, required: false},
+    lon: {type: Number, required: false},
+    lat: {type: Number, required: false}
 });
 
 

@@ -49,10 +49,14 @@ async function getRestaurants(request, response, next)
 
       const userCity = request.query.location;
       const userInput = request.query.term;
+
       // const gAddress = request.query.address;
       const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
       // const googleRequest = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=601+E+Pike+St,+Unit+100,+Seattle,+WA+98122&key=${process.env.GAPI_KEY}`);
       // console.log("HERE ---->", googleRequest.data,"<--------HERE");
+      //const gAddress = request.query.address;
+      const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
+
       let foodData = await axios.get(url, {
         headers:{
           'Authorization': `Bearer ${process.env.apiKey}`
@@ -133,8 +137,7 @@ app.get('/', (request, response) => {
 class RestaurantData {
   constructor(rest)//objects with data
   {
-
-      //console.log("HERE", rest);
+      //console.log("HERE----->", rest, "<-----HERE");
     this.name = rest.name;
     this.rating = rest.rating;
     this.address = rest.location.display_address;
@@ -144,12 +147,25 @@ class RestaurantData {
     this.zip_code = rest.location.zip_code;
     this.price = rest.price;
     this.notes = '';
+    this.review_count = rest.review_count;
+    this.lat = rest.coordinates.latitude;
+    this.lon = rest.coordinates.longitude;
 
-    //google object info for front
-    //this.gAddress = google
+    //google object info with data
+    //this.gdata = this.getGoogleMapData(this.address);
+
 
     return;
   }
+
+  async getGoogleMapData (addy){
+    console.log(addy, "<---- HERE");
+
+      const googleRequest = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${addy}&key=${process.env.GAPI_KEY}`);
+      console.log("HERE ---->", googleRequest.data,"<--------HERE");
+      return googleRequest;
+
+  };
 }
 /*
 class GoogleData {
