@@ -29,22 +29,32 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3002;
+
 async function getRestaurants(request, response, next)
 {
-    /*
+    
   authUser(request, async (error, user) =>{
     if(error) {
       console.error(error);
       response.send('token recieved is invalid, try again');
     }
     else{
-        */
-       //const searchObject = {};
-       //if(request.query.email) searchObject.email = req.query.email;
+        
+       const searchObject = {};
+       if(request.query.email) searchObject.email = req.query.email;
+    }
     try{
-      //const restaurantFromDb = await Restaurant.find(searchObject);
-      //if(restaurantFromDb.length > 0)
-        //response.status(200).send()
+      const restaurantFromDb = await Restaurant.find(searchObject);
+      if(restaurantFromDb.length > 0)
+        response.status(200).send()
+    } catch  (e){
+      console.error(e);
+      response.status(500).send('server error')
+    }
+  
+
+  
+    
 
       const userCity = request.query.location;
       const userInput = request.query.term;
