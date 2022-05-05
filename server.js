@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 3002;
 async function getRestaurants(request, response, next)
 {
     
-  authUser(request, async (error, user) =>{
+  verifyUser(request, async (error, user) =>{
     if(error) {
       console.error(error);
       response.send('token recieved is invalid, try again');
@@ -42,24 +42,21 @@ async function getRestaurants(request, response, next)
         
        const searchObject = {};
        if(request.query.email) searchObject.email = req.query.email;
-    }
     try{
       const restaurantFromDb = await Restaurant.find(searchObject);
       if(restaurantFromDb.length > 0)
         response.status(200).send()
-    } catch  (e){
-      console.error(e);
-      response.status(500).send('server error')
-    }
-  
-
-  
-    
 
       const userCity = request.query.location;
       const userInput = request.query.term;
+
+      // const gAddress = request.query.address;
+      const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
+      // const googleRequest = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=601+E+Pike+St,+Unit+100,+Seattle,+WA+98122&key=${process.env.GAPI_KEY}`);
+      // console.log("HERE ---->", googleRequest.data,"<--------HERE");
       //const gAddress = request.query.address;
       const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
+
       let foodData = await axios.get(url, {
         headers:{
           'Authorization': `Bearer ${process.env.apiKey}`
@@ -72,8 +69,10 @@ async function getRestaurants(request, response, next)
     {
         next(error);
     }
-    //}});
+    }});
 }
+
+
 
 
 
