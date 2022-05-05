@@ -9,6 +9,7 @@ const Restaurant = require('./models/restaurantModel.js');
 const axios = require('axios');
 const verifyUser = require('./auth');
 
+
 //schema
 
 mongoose.connect(process.env.DB_URL);
@@ -47,12 +48,16 @@ async function getRestaurants(request, response, next)
 
       const userCity = request.query.location;
       const userInput = request.query.term;
+      const gAddress = request.query.address;
       const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
+      const googleRequest = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=${process.env.GAPI_KEY}`);
+      console.log("HERE ---->", googleRequest,"<--------HERE");
       let foodData = await axios.get(url, {
         headers:{
           'Authorization': `Bearer ${process.env.apiKey}`
         }
       });
+      
       let yelpedData = foodData.data.businesses.map(loc => {return new RestaurantData(loc)})
         response.status(200).send(yelpedData);
     }catch(error)
@@ -123,7 +128,7 @@ app.get('/', (request, response) => {
 
 
 class RestaurantData {
-  constructor(rest, google)
+  constructor(rest, google)//objects with data
   {
 
       //console.log("HERE", rest);
@@ -136,14 +141,26 @@ class RestaurantData {
     this.zip_code = rest.location.zip_code;
     this.price = rest.price;
     this.notes = '';
-    this.googleapi(google);
+
+    //google object info for front
+    //this.gAddress = google
+
     return;
   }
-  googleapi(data){
-    console.log(data);
-
-  }
 }
+/*
+class GoogleData {
+  let address;
+  let key;
+  constructor(data)
+  {
+  }
+  getGoogleMapData = (data => {
+    console.log(data);
+      //console.log("HERE ---->", googleRequest,"<--------HERE");
+  });
+}
+*/
 
 
 
