@@ -50,8 +50,8 @@ async function getRestaurants(request, response, next)
       const userInput = request.query.term;
       const gAddress = request.query.address;
       const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
-      const googleRequest = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=${process.env.GAPI_KEY}`);
-      console.log("HERE ---->", googleRequest,"<--------HERE");
+      const googleRequest = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=601+E+Pike+St,+Unit+100,+Seattle,+WA+98122&key=${process.env.GAPI_KEY}`);
+      console.log("HERE ---->", googleRequest.data,"<--------HERE");
       let foodData = await axios.get(url, {
         headers:{
           'Authorization': `Bearer ${process.env.apiKey}`
