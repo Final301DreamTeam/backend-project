@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Final301DreamTeam/backend-project#readme",
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.14.1",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",

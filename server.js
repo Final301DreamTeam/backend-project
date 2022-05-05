@@ -123,7 +123,7 @@ app.get('/', (request, response) => {
 
 
 class RestaurantData {
-  constructor(rest)
+  constructor(rest, google)
   {
 
       //console.log("HERE", rest);
@@ -136,11 +136,12 @@ class RestaurantData {
     this.zip_code = rest.location.zip_code;
     this.price = rest.price;
     this.notes = '';
-    this.googleapi(rest);
+    this.googleapi(google);
     return;
   }
   googleapi(data){
     console.log(data);
+
   }
 }
 
