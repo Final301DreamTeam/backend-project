@@ -7,6 +7,9 @@ const mongoose = require('mongoose');
 const res = require('express/lib/response');
 const Restaurant = require('./models/restaurantModel.js');
 const axios = require('axios');
+const verifyUser = require('./auth');
+
+
 //schema
 
 mongoose.connect(process.env.DB_URL);
@@ -26,27 +29,45 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3002;
+
 async function getRestaurants(request, response, next)
 {
-    /*
+    
   authUser(request, async (error, user) =>{
     if(error) {
       console.error(error);
       response.send('token recieved is invalid, try again');
     }
     else{
-        */
-
-
+        
+       const searchObject = {};
+       if(request.query.email) searchObject.email = req.query.email;
+    }
     try{
+      const restaurantFromDb = await Restaurant.find(searchObject);
+      if(restaurantFromDb.length > 0)
+        response.status(200).send()
+    } catch  (e){
+      console.error(e);
+      response.status(500).send('server error')
+    }
+  
+
+  
+    
+
       const userCity = request.query.location;
       const userInput = request.query.term;
+      const gAddress = request.query.address;
       const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
+      const googleRequest = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=601+E+Pike+St,+Unit+100,+Seattle,+WA+98122&key=${process.env.GAPI_KEY}`);
+      console.log("HERE ---->", googleRequest.data,"<--------HERE");
       let foodData = await axios.get(url, {
         headers:{
           'Authorization': `Bearer ${process.env.apiKey}`
         }
       });
+      
       let yelpedData = foodData.data.businesses.map(loc => {return new RestaurantData(loc)})
         response.status(200).send(yelpedData);
     }catch(error)
@@ -117,7 +138,7 @@ app.get('/', (request, response) => {
 
 
 class RestaurantData {
-  constructor(rest)
+  constructor(rest, google)//objects with data
   {
 
       //console.log("HERE", rest);
@@ -130,9 +151,26 @@ class RestaurantData {
     this.zip_code = rest.location.zip_code;
     this.price = rest.price;
     this.notes = '';
+
+    //google object info for front
+    //this.gAddress = google
+
     return;
   }
 }
+/*
+class GoogleData {
+  let address;
+  let key;
+  constructor(data)
+  {
+  }
+  getGoogleMapData = (data => {
+    console.log(data);
+      //console.log("HERE ---->", googleRequest,"<--------HERE");
+  });
+}
+*/
 
 
 
