@@ -34,4 +34,4 @@ function verifyUser(req, errorFirstOrUserCallbackFunction) {
   }
 }
 
-module.exports = verifyUser;
+module.exports = verifyUser ;
