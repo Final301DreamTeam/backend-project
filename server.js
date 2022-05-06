@@ -49,21 +49,22 @@ async function getRestaurants(request, response, next)
       /*
         */
       const restaurantFromDb = await Restaurant.find(searchObject);
-      if(restaurantFromDb.length > 0)
-        response.status(200).send()
+      if(restaurantFromDb.length > 0){}
+        // response.status(200).send()
 
       const userCity = request.query.location;
       const userInput = request.query.term;
       const content =  {
         headers:{
-          'Authorization': `Bearer ${process.env.apiKey}`
+          Authorization: `Bearer ${process.env.apiKey}`
         }
       }
 
-      const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
+      const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}`;
       let foodData = await axios.get(url,content);
-      
-      let yelpedData = foodData.data.businesses.map(loc => {return new RestaurantData(loc)})
+      let yelpedData = foodData.data.businesses.map(loc => {return new RestaurantData(loc)});
+      console.log('here');
+      console.log(yelpedData);
         response.status(200).send(yelpedData);
     }catch(error)
     {
