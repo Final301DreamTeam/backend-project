@@ -34,6 +34,7 @@ async function getRestaurants(request, response, next)
 {
     
     /*
+       */
   verifyUser(request, async (error, user) =>{
 
     if(error) {
@@ -44,13 +45,12 @@ async function getRestaurants(request, response, next)
         
        const searchObject = {};
        if(request.query.email) searchObject.email = req.query.email;
-       */
     try{
       /*
+        */
       const restaurantFromDb = await Restaurant.find(searchObject);
       if(restaurantFromDb.length > 0)
         response.status(200).send()
-        */
 
       const userCity = request.query.location;
       const userInput = request.query.term;
@@ -69,7 +69,8 @@ async function getRestaurants(request, response, next)
     {
         next(error);
     }
-    //}});
+    /* */
+    }});
 }
 
 
