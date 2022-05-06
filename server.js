@@ -54,14 +54,14 @@ async function getRestaurants(request, response, next)
 
       const userCity = request.query.location;
       const userInput = request.query.term;
-
-      const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
-      let foodData = await axios.get(url
-        , {
+      const content =  {
         headers:{
           'Authorization': `Bearer ${process.env.apiKey}`
         }
-      });
+      }
+
+      const url = `https://api.yelp.com/v3/businesses/search?&limit=15&term=${userInput}&location=${userCity}&apiKey=${process.env.apiKey}`;
+      let foodData = await axios.get(url,content);
       
       let yelpedData = foodData.data.businesses.map(loc => {return new RestaurantData(loc)})
         response.status(200).send(yelpedData);
